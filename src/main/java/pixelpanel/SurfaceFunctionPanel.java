@@ -22,10 +22,8 @@ public class SurfaceFunctionPanel extends FunctionPanel {
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 Point2D p = transform(x, y);
-                double dx = p.getX();
-                double dy = p.getY();
-                double result = function.execute(dx, dy).doubleValue();
-                image.setRGB(x, y, Color.HSBtoRGB((float) result, 1f, (float) result));
+                float result = function.execute(new Complex(p)).floatValue();
+                image.setRGB(x, y, Color.HSBtoRGB(result, 1f, result));
             }
         }
         g2.drawImage(image, 0, 0, this);

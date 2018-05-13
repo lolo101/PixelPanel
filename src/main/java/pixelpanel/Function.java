@@ -8,5 +8,5 @@ public interface Function {
      * @param d les <i>n</i> coordonnées de l'espace.
      * @return le nombre correspondant.
      */
-    Number execute(double... d);
+    Number execute(Complex d);
 }

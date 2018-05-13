@@ -50,9 +50,9 @@ public class FunctionPanel extends JPanel {
 
         Path2D path = new Path2D.Double(Path2D.WIND_NON_ZERO, width);
         for (int x = 0; x < width; ++x) {
-            Point2D px = transform(x, 0);
-            double dx = px.getX();
-            double dy = function.execute(dx).doubleValue();
+            Point2D p = transform(x, 0);
+            double dx = p.getX();
+            double dy = function.execute(new Complex(p)).doubleValue();
             if (Double.isNaN(dy)) {
                 if (path.getCurrentPoint() != null) {
                     g2.draw(path);

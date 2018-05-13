@@ -2,5 +2,5 @@ package pixelpanel;
 
 public interface ParametrisedFunction extends Function {
 
-	void setParameter(double... p);
+	void setParameter(Complex c);
 }

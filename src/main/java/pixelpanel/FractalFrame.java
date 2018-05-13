@@ -26,7 +26,7 @@ public class FractalFrame extends JFrame {
             if (e.getClickCount() == 1) {
                 Point2D c = panelMandelbrot.transform(e.getX(), e.getY());
                 parameterLabel.setText(String.format(PARAM_FORMAT, c.getX(), c.getY()));
-                Main.julia.setParameter(c.getX(), c.getY());
+                Main.julia.setParameter(new Complex(c));
                 panelJulia.repaint();
             }
         }
