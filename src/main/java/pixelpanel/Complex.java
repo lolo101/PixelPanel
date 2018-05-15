@@ -4,7 +4,7 @@ import java.awt.geom.Point2D;
 
 class Complex {
 
-    private double re, im;
+    private final double re, im;
 
     Complex(double re, double im) {
         this.re = re;

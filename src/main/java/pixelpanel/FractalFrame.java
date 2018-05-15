@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 public class FractalFrame extends JFrame {
 
-    private static final String PARAM_FORMAT = "c = (%g + i.%g)";
+    private static final String PARAM_FORMAT = "c = %g + %gi";
     private final JLabel parameterLabel = new JLabel(String.format(PARAM_FORMAT, 0., 0.));
     private final FunctionPanel panelMandelbrot = new SurfaceFunctionPanel(Main.mandelbrot);
     private final JPanel panelJulia = new SurfaceFunctionPanel(Main.julia);
