@@ -18,8 +18,8 @@ public class FractalFrame extends JFrame {
 
     private static final String PARAM_FORMAT = "c = %g + %gi";
     private final JLabel parameterLabel = new JLabel(String.format(PARAM_FORMAT, 0., 0.));
-    private final FunctionPanel panelMandelbrot = new SurfaceFunctionPanel(Main.mandelbrot);
-    private final JPanel panelJulia = new SurfaceFunctionPanel(Main.julia);
+    private final FunctionPanel panelMandelbrot = new FunctionPanel(Main.mandelbrot);
+    private final JPanel panelJulia = new FunctionPanel(Main.julia);
     private final MouseListener parameterMouseSelector = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {

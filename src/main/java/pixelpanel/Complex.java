@@ -2,7 +2,7 @@ package pixelpanel;
 
 import java.awt.geom.Point2D;
 
-class Complex {
+final class Complex {
 
     private final double re, im;
 
@@ -24,7 +24,7 @@ class Complex {
         return new Complex(re + c.re, im + c.im);
     }
 
-    public Complex mult(Complex c) {
-        return new Complex(re * c.re - im * c.im, im * c.re + re * c.im);
+    public Complex square() {
+        return new Complex(re * re - im * im, im * re + re * im);
     }
 }

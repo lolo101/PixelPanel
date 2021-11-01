@@ -1,18 +1,15 @@
 package pixelpanel;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import javax.swing.JPanel;
+import java.awt.image.BufferedImage;
 
 public class FunctionPanel extends JPanel {
 
-    protected final Function function;
-    protected final AffineTransform transform = AffineTransform.getScaleInstance(1.0, -1.0);
+    private final Function function;
+    private final AffineTransform transform = AffineTransform.getScaleInstance(1.0, -1.0);
 
     public FunctionPanel(Function function) {
         this.function = function;
@@ -43,37 +40,21 @@ public class FunctionPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
         int width = getWidth();
+        int height = getHeight();
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setColor(getForeground());
 
-        Path2D path = new Path2D.Double(Path2D.WIND_NON_ZERO, width);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < width; ++x) {
-            Point2D p = transform(x, 0);
-            double dx = p.getX();
-            double dy = function.execute(new Complex(p)).doubleValue();
-            if (Double.isNaN(dy)) {
-                if (path.getCurrentPoint() != null) {
-                    g2.draw(path);
-                    path.reset();
-                }
-            } else {
-                try {
-                    Point2D py = new Point2D.Double(dx, dy);
-                    transform.inverseTransform(py, py);
-                    if (path.getCurrentPoint() == null) {
-                        path.moveTo(py.getX(), py.getY());
-                    } else {
-                        path.lineTo(py.getX(), py.getY());
-                    }
-                } catch (NoninvertibleTransformException ex) {
-                    throw new AssertionError(ex);
-                }
+            for (int y = 0; y < height; ++y) {
+                Point2D p = transform(x, y);
+                float result = function.execute(new Complex(p)).floatValue();
+                image.setRGB(x, y, Color.HSBtoRGB(result, 1f, result));
             }
         }
-        g2.draw(path);
+        g2.drawImage(image, 0, 0, this);
 
+        g2.setColor(Color.WHITE);
         g2.drawString("X" + 1.0 / transform.getScaleX(), 5, 14);
         g2.dispose();
     }
@@ -81,10 +62,6 @@ public class FunctionPanel extends JPanel {
     /**
      * Transforme un point de coordonnées entières x et y de l'espace de la
      * fenêtre graphique en un point de l'espace de la fonction.
-     *
-     * @param x
-     * @param y
-     * @return
      */
     public Point2D transform(int x, int y) {
         Point2D ret = new Point2D.Double(x, y);
