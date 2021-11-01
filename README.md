@@ -1,5 +1,6 @@
 # PixelPanel
 Plain old Java Swing app that shows fractals
+![Screenshot showing a Julia set and the Madelbrot set](./screenshot.png "Screenshot")
 
 ## Usage
 The application's panel displays two parts with different but related fractals.
