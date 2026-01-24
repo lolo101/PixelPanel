@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.StructuredTaskScope;
 
 public class FunctionPanel extends JPanel {
 
@@ -42,18 +43,25 @@ public class FunctionPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         int width = getWidth();
         int height = getHeight();
-        Graphics2D g2 = (Graphics2D) g.create();
-
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                Point2D p = transform(x, y);
-                float result = function.execute(new Complex(p)).floatValue();
-                image.setRGB(x, y, Color.HSBtoRGB(result, 1f, result));
-            }
-        }
-        g2.drawImage(image, 0, 0, this);
 
+        try (var scope = StructuredTaskScope.open()) {
+            for (int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    Point2D.Double pixel = new Point2D.Double(x, y);
+                    scope.fork(() -> {
+                        Point2D p = transform.transform(pixel, null);
+                        float result = function.execute(new Complex(p)).floatValue();
+                        image.setRGB((int) pixel.getX(), (int) pixel.getY(), Color.HSBtoRGB(result, 1f, result));
+                    });
+                }
+            }
+            scope.join();
+        } catch (InterruptedException _) {
+        }
+
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.drawImage(image, 0, 0, this);
         g2.setColor(Color.WHITE);
         g2.drawString("X" + 1.0 / transform.getScaleX(), 5, 14);
         g2.dispose();
