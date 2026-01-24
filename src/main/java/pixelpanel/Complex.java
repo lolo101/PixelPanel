@@ -2,18 +2,10 @@ package pixelpanel;
 
 import java.awt.geom.Point2D;
 
-final class Complex {
-
-    private final double re, im;
-
-    Complex(double re, double im) {
-        this.re = re;
-        this.im = im;
-    }
+public record Complex(double re, double im) {
 
     Complex(Point2D p) {
-        this.re = p.getX();
-        this.im = p.getY();
+        this(p.getX(), p.getY());
     }
 
     public double modSquare() {

@@ -36,7 +36,7 @@ public class Main {
         return iteration(z.square().add(c), c, step + 1);
     }
 
-    public static void main(String[] args) {
+    static void main() {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new FractalFrame();
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
