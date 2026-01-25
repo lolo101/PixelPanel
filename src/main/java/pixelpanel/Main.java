@@ -20,7 +20,7 @@ public class Main {
 
         /**
          * Si c est dans l'ensemble de Mandelbrot, l'ensemble de Julia sera connexe.
-         * Il sera une 'poussière de Fatou' sinon.
+         * Il sera une 'poussière de Fatou' (ou 'ensemble de Cantor') sinon.
          */
         @Override
         public void setParameter(Complex c) {
