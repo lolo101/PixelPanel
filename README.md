@@ -3,9 +3,9 @@ Plain old Java Swing app that shows fractals
 ![Screenshot showing a Julia set and the Madelbrot set](./screenshot.png "Screenshot")
 
 ## Requirements
-This application uses Structured Concurrency preview feature of Java 25 ([JEP 505](https://openjdk.org/jeps/505)). 
+This application uses Structured Concurrency preview feature of Java 26 ([JEP 525](https://openjdk.org/jeps/525)). 
 
-Therefore, it is required for it to run on a JRE 25.
+Therefore, it is required for it to run on a JRE 26.
 
 ## Usage
 The application's panel displays two parts with different but related fractals.
