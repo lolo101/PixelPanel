@@ -45,16 +45,27 @@ public class FunctionPanel extends JPanel {
         int height = getHeight();
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
+        double[] matrix = new double[6];
+        transform.getMatrix(matrix);
+        double m00 = matrix[0];
+        double m11 = matrix[3];
+        double m02 = matrix[4];
+        double m12 = matrix[5];
+
         try (var scope = StructuredTaskScope.open()) {
-            for (int x = 0; x < width; ++x) {
-                for (int y = 0; y < height; ++y) {
-                    Point2D.Double pixel = new Point2D.Double(x, y);
-                    scope.fork(() -> {
-                        Point2D p = transform.transform(pixel, null);
-                        float result = function.execute(new Complex(p)).floatValue();
-                        image.setRGB((int) pixel.getX(), (int) pixel.getY(), Color.HSBtoRGB(result, 1f, result));
+            for (int y = 0; y < height; ++y) {
+                final int row = y;
+                scope.fork(
+                    () -> {
+                        for (int x = 0; x < width; ++x) {
+                            double px = x * m00 + m02;
+                            double py = row * m11 + m12;
+
+                            float result = function.execute(new Complex(px, py)).floatValue();
+                            image.setRGB(x, row, Color.HSBtoRGB(result, 1f, result));
+                        }
+                        return null;
                     });
-                }
             }
             scope.join();
         } catch (InterruptedException _) {
