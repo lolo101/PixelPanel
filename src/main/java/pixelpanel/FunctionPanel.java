@@ -68,18 +68,26 @@ public class FunctionPanel extends JPanel {
         double m02 = matrix[4];
         double m12 = matrix[5];
 
+        int bands = Math.min(Runtime.getRuntime().availableProcessors(), height);
         try (var scope = StructuredTaskScope.open()) {
-            for (int y = 0; y < height; ++y) {
-                final int row = y;
+            for (int band = 0; band < bands; ++band) {
+                final int firstRow = band;
+                final int step = bands;
                 scope.fork(
                     () -> {
-                        double py = row * m11 + m12;
-                        int offset = row * width;
-                        for (int x = 0; x < width; ++x) {
-                            double px = x * m00 + m02;
+                        // Les lignes sont réparties en «peigne» (row, row+step, ...)
+                        // plutôt qu'en blocs contigus : les lignes coûteuses (au
+                        // cœur de l'ensemble) sont ainsi étalées sur tous les
+                        // threads, ce qui équilibre la charge.
+                        for (int row = firstRow; row < height; row += step) {
+                            double py = row * m11 + m12;
+                            int offset = row * width;
+                            for (int x = 0; x < width; ++x) {
+                                double px = x * m00 + m02;
 
-                            double result = function.execute(px, py);
-                            pixels[offset + x] = PALETTE[(int) (result * (PALETTE.length - 1))];
+                                double result = function.execute(px, py);
+                                pixels[offset + x] = PALETTE[(int) (result * (PALETTE.length - 1))];
+                            }
                         }
                         return null;
                     });
