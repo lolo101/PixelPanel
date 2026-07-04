@@ -5,9 +5,24 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.util.concurrent.StructuredTaskScope;
 
 public class FunctionPanel extends JPanel {
+
+    /**
+     * {@link Function#execute} renvoie une valeur dans [0, 1] qui ne peut
+     * prendre que N_MAX + 1 valeurs distinctes. On précalcule donc la couleur
+     * correspondante une fois pour toutes, ce qui évite d'appeler
+     * {@link Color#HSBtoRGB} pour chaque pixel.
+     */
+    private static final int[] PALETTE = new int[256];
+    static {
+        for (int i = 0; i < PALETTE.length; ++i) {
+            float v = i / (float) (PALETTE.length - 1);
+            PALETTE[i] = Color.HSBtoRGB(v, 1f, v);
+        }
+    }
 
     private final Function function;
     private final AffineTransform transform = AffineTransform.getScaleInstance(1.0, -1.0);
@@ -44,6 +59,7 @@ public class FunctionPanel extends JPanel {
         int width = getWidth();
         int height = getHeight();
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
         double[] matrix = new double[6];
         transform.getMatrix(matrix);
@@ -57,12 +73,13 @@ public class FunctionPanel extends JPanel {
                 final int row = y;
                 scope.fork(
                     () -> {
+                        double py = row * m11 + m12;
+                        int offset = row * width;
                         for (int x = 0; x < width; ++x) {
                             double px = x * m00 + m02;
-                            double py = row * m11 + m12;
 
-                            float result = function.execute(new Complex(px, py)).floatValue();
-                            image.setRGB(x, row, Color.HSBtoRGB(result, 1f, result));
+                            double result = function.execute(px, py);
+                            pixels[offset + x] = PALETTE[(int) (result * (PALETTE.length - 1))];
                         }
                         return null;
                     });

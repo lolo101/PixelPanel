@@ -8,14 +8,14 @@ public class Main {
     private static final int N_MAX = 255;
     private static final double MODULUS_MAX = 4.0;
 
-    public static final Function mandelbrot = c -> iteration(new Complex(0, 0), c);
+    public static final Function mandelbrot = (re, im) -> iteration(0, 0, re, im);
 
     public static final ParametrisedFunction julia = new ParametrisedFunction() {
         private Complex c = new Complex(0, 0);
 
         @Override
-        public Number execute(Complex z) {
-            return iteration(z, c);
+        public double execute(double re, double im) {
+            return iteration(re, im, c.re(), c.im());
         }
 
         /**
@@ -31,11 +31,7 @@ public class Main {
     /**
      * z(n) = z(n-1)² + c
      */
-    private static Number iteration(Complex z, Complex c) {
-        double zre = z.re();
-        double zim = z.im();
-        double cre = c.re();
-        double cim = c.im();
+    private static double iteration(double zre, double zim, double cre, double cim) {
         for (int i = 0; i < N_MAX; ++i) {
             double zre2 = zre * zre;
             double zim2 = zim * zim;
